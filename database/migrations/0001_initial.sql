@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS service_requests (
+	id TEXT PRIMARY KEY,
+	request_number TEXT UNIQUE NOT NULL,
+	title TEXT NOT NULL,
+	description TEXT NOT NULL,
+	location TEXT NOT NULL,
+	category TEXT NOT NULL,
+	priority TEXT DEFAULT 'MEDIUM',
+	status TEXT DEFAULT 'SUBMITTED',
+	created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
