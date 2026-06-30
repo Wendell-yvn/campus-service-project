@@ -16,6 +16,13 @@
 	"upload_source_maps": true,
 	"compatibility_flags": [
 		"nodejs_compat"
+	],
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "campus-maintenance-db",
+			"database_id": "abc123-def456-..."
+		}
 	]
 	/**
 	 * Smart Placement
