@@ -87,7 +87,7 @@ const STATUS_LABELS: Record<Status, string> = {
   REOPENED: 'Reopened',
 }
 
-const CATEGORIES = ['AC', 'Internet', 'Proyektor', 'Kursi', 'Laboratorium', 'Kebersihan', 'Lainnya']
+const LOCATION_CATEGORIES = ['Ruang Kelas', 'Laboratorium', 'Perpustakaan', 'Kantor', 'Aula', 'Koridor', 'Area Umum', 'Lainnya']
 
 function formatDate(value: string | null | undefined) {
   if (!value) return '-'
@@ -130,7 +130,7 @@ async function parseResponse<T>(response: Response): Promise<T> {
 }
 
 function App() {
-  const [activeUser, setActiveUser] = useState<AppUser>(USERS[0])
+  const [activeUser, setActiveUser] = useState<AppUser | null>(null)
   const [page, setPage] = useState<Page>('reports')
   const [reports, setReports] = useState<Report[]>([])
   const [selectedReport, setSelectedReport] = useState<Report | null>(null)
@@ -142,8 +142,8 @@ function App() {
 
   const headers = useMemo(() => ({
     'Content-Type': 'application/json',
-    'X-User-Id': activeUser.id,
-  }), [activeUser.id])
+    'X-User-Id': activeUser?.id || '',
+  }), [activeUser?.id])
 
   const notify = (text: string) => {
     setMessage(text)
@@ -206,6 +206,7 @@ function App() {
   }
 
   useEffect(() => {
+    if (!activeUser) return
     if (page === 'dashboard') {
       loadDashboard()
     } else {
@@ -214,11 +215,19 @@ function App() {
     loadTechnicians()
   }, [activeUser, page, filters])
 
-  const switchUser = (user: AppUser) => {
+  const login = (user: AppUser) => {
     setActiveUser(user)
     setSelectedReport(null)
     setPage(user.role === 'FACILITY_MANAGER' ? 'dashboard' : 'reports')
-    notify(`Beralih ke ${roleLabel(user.role)}.`)
+    notify(`Masuk sebagai ${roleLabel(user.role)}.`)
+  }
+
+  const logout = () => {
+    setActiveUser(null)
+    setSelectedReport(null)
+    setReports([])
+    setDashboard(null)
+    setPage('reports')
   }
 
   const refreshDetail = async () => {
@@ -236,6 +245,10 @@ function App() {
     setSelectedReport(payload.data)
     await loadReports()
     notify('Perubahan tersimpan.')
+  }
+
+  if (!activeUser) {
+    return <LoginScreen onLogin={login} />
   }
 
   return (
@@ -263,17 +276,7 @@ function App() {
             </button>
           )}
         </nav>
-        <div className="role-picker">
-          {USERS.map((user) => (
-            <button
-              key={user.id}
-              className={activeUser.id === user.id ? 'role active' : 'role'}
-              onClick={() => switchUser(user)}
-            >
-              {roleLabel(user.role)}
-            </button>
-          ))}
-        </div>
+        <button className="btn ghost" onClick={logout}>Keluar</button>
       </header>
 
       <section className="current-user">
@@ -332,6 +335,82 @@ function App() {
   )
 }
 
+function LoginScreen(props: { onLogin: (user: AppUser) => void }) {
+  const [role, setRole] = useState<Role>('REPORTER')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+
+  const submit = (event: React.FormEvent) => {
+    event.preventDefault()
+    if (!email.trim() || !password.trim()) {
+      setError('Email dan password wajib diisi.')
+      return
+    }
+    const user = USERS.find((item) => item.role === role)
+    if (user) props.onLogin(user)
+  }
+
+  return (
+    <main className="login-page">
+      <section className="login-hero">
+        <span className="login-kicker">Campus Service Request</span>
+        <h1>Sistem Pelaporan dan Pemeliharaan Fasilitas Kampus</h1>
+        <p>
+          Masuk sebagai Pelapor, Administrator, Teknisi, atau Manajer Fasilitas untuk mengelola alur laporan dari
+          Submitted sampai Closed.
+        </p>
+        <div className="login-highlights">
+          <span>Laporan fasilitas</span>
+          <span>Riwayat status</span>
+          <span>Dashboard fasilitas</span>
+        </div>
+      </section>
+
+      <section className="login-card">
+        <div>
+          <h2>Masuk ke Sistem</h2>
+          <p>Form login ini bersifat formalitas untuk simulasi hak akses.</p>
+        </div>
+        <form className="form" onSubmit={submit}>
+          <label>
+            Peran
+            <select value={role} onChange={(event) => setRole(event.target.value as Role)}>
+              <option value="REPORTER">Pelapor</option>
+              <option value="ADMIN">Administrator</option>
+              <option value="TECHNICIAN">Teknisi</option>
+              <option value="FACILITY_MANAGER">Manajer Fasilitas</option>
+            </select>
+          </label>
+          <label>
+            Email
+            <input
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder={role === 'ADMIN' ? 'admin@kampus.ac.id' : 'nama@kampus.ac.id'}
+            />
+          </label>
+          <label>
+            Password
+            <input
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder="Masukkan password"
+            />
+          </label>
+          {role === 'ADMIN' && (
+            <p className="form-note">Administrator dapat memakai email kampus. Validasi domain belum diterapkan pada tahap ini.</p>
+          )}
+          {error && <p className="form-error">{error}</p>}
+          <button className="btn primary" type="submit">Masuk</button>
+        </form>
+      </section>
+    </main>
+  )
+}
+
 function ReportList(props: {
   activeUser: AppUser
   filters: { q: string; status: string; category: string; location: string }
@@ -360,8 +439,8 @@ function ReportList(props: {
           placeholder="Cari nomor, judul, lokasi, atau deskripsi"
         />
         <select value={props.filters.category} onChange={(event) => props.setFilters({ ...props.filters, category: event.target.value })}>
-          <option value="">Semua kategori</option>
-          {CATEGORIES.map((category) => <option key={category} value={category}>{category}</option>)}
+          <option value="">Semua kategori lokasi</option>
+          {LOCATION_CATEGORIES.map((category) => <option key={category} value={category}>{category}</option>)}
         </select>
         <select value={props.filters.status} onChange={(event) => props.setFilters({ ...props.filters, status: event.target.value })}>
           <option value="">Semua status</option>
@@ -384,6 +463,7 @@ function ReportList(props: {
             <span>Nomor</span>
             <span>Judul</span>
             <span>Lokasi</span>
+            <span>Waktu Masuk</span>
             <span>Status</span>
             <span>Prioritas</span>
             <span>Aksi</span>
@@ -393,6 +473,7 @@ function ReportList(props: {
               <span className="mono">{report.request_number}</span>
               <span>{report.title}</span>
               <span>{report.location}</span>
+              <span>{formatDate(report.created_at)}</span>
               <span><span className={statusClass(report.status)}>{STATUS_LABELS[report.status]}</span></span>
               <span><span className={priorityClass(report.priority)}>{report.priority || '-'}</span></span>
               <span className="link">Lihat Detail</span>
@@ -410,7 +491,7 @@ function CreateReport(props: {
   onCreated: (report: Report) => void
   onError: (message: string) => void
 }) {
-  const [form, setForm] = useState({ title: '', category: 'AC', location: '', description: '' })
+  const [form, setForm] = useState({ title: '', category: 'Ruang Kelas', location: '', description: '' })
   const [submitting, setSubmitting] = useState(false)
 
   const submit = async (event: React.FormEvent) => {
@@ -445,24 +526,25 @@ function CreateReport(props: {
       <div className="section-heading">
         <div>
           <h1>Buat Laporan Baru</h1>
-          <p>Isi data masalah fasilitas kampus. Deskripsi minimal 20 karakter.</p>
+          <p>Isi lokasi dan fasilitas yang bermasalah. Tanggal dan jam laporan masuk akan dicatat otomatis.</p>
         </div>
       </div>
       <form className="form" onSubmit={submit}>
         <label>
-          Judul laporan *
-          <input value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} placeholder="Contoh: AC tidak dingin" />
+          Fasilitas/barang yang bermasalah *
+          <input value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} placeholder="Contoh: AC ruang kelas tidak dingin" />
         </label>
         <label>
-          Kategori *
+          Kategori lokasi *
           <select value={form.category} onChange={(event) => setForm({ ...form, category: event.target.value })}>
-            {CATEGORIES.map((category) => <option key={category} value={category}>{category}</option>)}
+            {LOCATION_CATEGORIES.map((category) => <option key={category} value={category}>{category}</option>)}
           </select>
         </label>
         <label>
           Lokasi *
           <input value={form.location} onChange={(event) => setForm({ ...form, location: event.target.value })} placeholder="Contoh: Ruang 301" />
         </label>
+        <div className="notice">Tanggal dan jam masuk: otomatis saat laporan disimpan.</div>
         <label>
           Deskripsi masalah *
           <textarea value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} placeholder="Jelaskan masalah fasilitas secara jelas." />
@@ -530,11 +612,11 @@ function ReportDetail(props: {
         </div>
         <div className="meta-grid">
           <Info label="Lokasi" value={props.report.location} />
-          <Info label="Kategori" value={props.report.category} />
+          <Info label="Kategori Lokasi" value={props.report.category} />
           <Info label="Prioritas" value={props.report.priority || '-'} />
           <Info label="Pelapor" value={props.report.reporter_name || props.report.reporter_id} />
           <Info label="Teknisi" value={props.report.technician_name || 'Belum ditugaskan'} />
-          <Info label="Dibuat" value={formatDate(props.report.created_at)} />
+          <Info label="Tanggal/Jam Masuk" value={formatDate(props.report.created_at)} />
         </div>
         <article className="description">
           <h2>Deskripsi</h2>
@@ -669,7 +751,7 @@ function DashboardView(props: {
       <div className="section-heading">
         <div>
           <h1>Dashboard Fasilitas</h1>
-          <p>Ringkasan jumlah laporan berdasarkan status, kategori, prioritas, dan laporan belum selesai.</p>
+          <p>Ringkasan jumlah laporan berdasarkan status, kategori lokasi, prioritas, dan laporan belum selesai.</p>
         </div>
       </div>
       {props.loading ? (
@@ -685,7 +767,7 @@ function DashboardView(props: {
             ))}
           </div>
           <div className="dashboard-grid">
-            <Summary title="Kategori" rows={(props.dashboard?.byCategory || []).map((item) => ({ label: item.category, count: item.count }))} />
+            <Summary title="Kategori Lokasi" rows={(props.dashboard?.byCategory || []).map((item) => ({ label: item.category, count: item.count }))} />
             <Summary title="Prioritas" rows={(props.dashboard?.byPriority || []).map((item) => ({ label: item.priority, count: item.count }))} />
           </div>
           <h2>Laporan Belum Selesai</h2>

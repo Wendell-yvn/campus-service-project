@@ -2,7 +2,7 @@
 
 ## Navigasi Umum
 
-Navigasi atas menampilkan nama aplikasi, menu Daftar Laporan, Buat Laporan untuk Pelapor, Dashboard untuk Manajer/Admin, dan pemilih peran demo.
+Navigasi atas menampilkan nama aplikasi, menu Daftar Laporan, Buat Laporan untuk Pelapor, Dashboard untuk Manajer/Admin, identitas pengguna aktif, dan tombol Keluar. Pemisahan peran dilakukan melalui layar login formal.
 
 ## Daftar Laporan
 
@@ -11,8 +11,8 @@ Elemen:
 1. Judul halaman.
 2. Tombol Buat Laporan untuk Pelapor.
 3. Pencarian kata kunci.
-4. Filter kategori, status, dan lokasi.
-5. Tabel nomor laporan, judul, lokasi, status, prioritas, dan aksi Lihat Detail.
+4. Filter kategori lokasi, status, dan lokasi.
+5. Tabel nomor laporan, judul, lokasi, tanggal/jam masuk, status, prioritas, dan aksi Lihat Detail.
 
 Perilaku:
 
@@ -24,10 +24,11 @@ Perilaku:
 
 Field:
 
-1. Judul laporan.
-2. Kategori.
-3. Lokasi.
+1. Fasilitas/barang yang bermasalah sebagai teks.
+2. Kategori lokasi.
+3. Lokasi detail.
 4. Deskripsi minimal 20 karakter.
+5. Tanggal dan jam masuk dicatat otomatis saat laporan disimpan.
 
 Aksi:
 
@@ -49,7 +50,7 @@ Informasi:
 3. Status.
 4. Prioritas.
 5. Lokasi.
-6. Kategori.
+6. Kategori lokasi.
 7. Pelapor.
 8. Teknisi.
 9. Deskripsi.
@@ -71,6 +72,6 @@ Bagian tambahan:
 Elemen:
 
 1. Jumlah laporan per status: Submitted, Under Review, Assigned, In Progress, Resolved, Closed.
-2. Ringkasan berdasarkan kategori.
+2. Ringkasan berdasarkan kategori lokasi.
 3. Ringkasan berdasarkan prioritas.
 4. Daftar laporan belum selesai.

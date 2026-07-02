@@ -25,9 +25,9 @@ Relasi:
 
 | FR | Method | Path | Fungsi |
 | --- | --- | --- | --- |
-| FR-01 | POST | `/api/reports` | Membuat laporan baru dan `request_number`. |
+| FR-01 | POST | `/api/reports` | Membuat laporan baru, `request_number`, serta tanggal/jam masuk. |
 | FR-02 | GET | `/api/reports` | Melihat daftar laporan sesuai hak akses. |
-| FR-03 | GET | `/api/reports?q=&status=&category=&location=` | Pencarian dan filter laporan. |
+| FR-03 | GET | `/api/reports?q=&status=&category=&location=` | Pencarian dan filter laporan berdasarkan status, kategori lokasi, atau lokasi detail. |
 | FR-04 | GET | `/api/reports/{id}` | Melihat detail, komentar, konfirmasi, dan riwayat. |
 | FR-05 | PATCH | `/api/reports/{id}/review` | Mengubah status menjadi `UNDER_REVIEW`. |
 | FR-06 | PATCH | `/api/reports/{id}/priority` | Menentukan prioritas. |
@@ -44,4 +44,4 @@ Endpoint pendukung:
 
 1. `GET /api/users/technicians`: daftar teknisi untuk penugasan.
 
-Hak akses disimulasikan dengan header `X-User-Id` pada tahap awal.
+Hak akses didapat dari login formal sederhana pada frontend dan dikirim ke API melalui header `X-User-Id` pada tahap awal.

@@ -3,16 +3,16 @@
 ## Functional Requirements
 
 **FR-01 - Membuat laporan baru**  
-Sistem harus memungkinkan Pelapor membuat laporan dengan judul, kategori, lokasi, dan deskripsi minimal 20 karakter. Sistem menyimpan nomor unik `request_number`.
+Sistem harus memungkinkan Pelapor membuat laporan dengan fasilitas/barang yang bermasalah sebagai teks, kategori lokasi, lokasi detail, dan deskripsi minimal 20 karakter. Sistem menyimpan nomor unik `request_number` serta tanggal dan jam laporan masuk.
 
 **FR-02 - Melihat daftar laporan**  
 Sistem harus menampilkan daftar laporan sesuai hak akses aktor.
 
 **FR-03 - Mencari dan menyaring laporan**  
-Sistem harus menyediakan pencarian dan filter berdasarkan kategori, status, atau lokasi.
+Sistem harus menyediakan pencarian dan filter berdasarkan kategori lokasi, status, atau lokasi.
 
 **FR-04 - Melihat detail laporan**  
-Sistem harus menampilkan deskripsi, lokasi, kategori, prioritas, status, riwayat status, dan komentar.
+Sistem harus menampilkan deskripsi, lokasi, kategori lokasi, prioritas, status, tanggal/jam masuk, riwayat status, dan komentar.
 
 **FR-05 - Memeriksa laporan**  
 Administrator dapat mengubah status dari `Submitted` menjadi `Under Review`.
@@ -42,7 +42,7 @@ Administrator dapat menutup laporan menjadi `Closed` setelah laporan `Resolved` 
 Administrator dapat membuka kembali laporan `Closed` menjadi `Reopened`.
 
 **FR-14 - Dashboard sederhana**  
-Manajer Fasilitas dapat melihat jumlah laporan per status, kategori, prioritas, dan daftar laporan belum selesai.
+Manajer Fasilitas dapat melihat jumlah laporan per status, kategori lokasi, prioritas, dan daftar laporan belum selesai.
 
 ## Non-Functional Requirements
 
@@ -91,4 +91,4 @@ Acceptance criteria: komentar muncul di detail; komentar menyimpan nama dan wakt
 Acceptance criteria: `Closed` hanya setelah `Resolved` dan dikonfirmasi; reopen dicatat di riwayat.
 
 **US-10:** Sebagai Manajer Fasilitas, saya ingin melihat dashboard.  
-Acceptance criteria: dashboard menampilkan jumlah per status; ringkasan kategori/prioritas.
+Acceptance criteria: dashboard menampilkan jumlah per status; ringkasan kategori lokasi/prioritas.

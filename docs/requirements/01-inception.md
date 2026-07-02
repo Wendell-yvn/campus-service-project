@@ -58,7 +58,7 @@ Yang di luar scope tahap awal:
 
 ## Asumsi
 
-**Asumsi:** Sistem memakai pengguna demo berbasis peran untuk tahap awal, bukan login Google.
+**Asumsi:** Sistem memakai login formal sederhana berbasis peran untuk tahap awal, bukan login Google.
 
 **Asumsi:** Prioritas minimal terdiri dari `Low`, `Medium`, `High`, dan `Urgent`.
 
