@@ -21,7 +21,8 @@
 		{
 			"binding": "DB",
 			"database_name": "campus-maintenance-db",
-			"database_id": "fccd1133-3eda-4d39-89ec-ce79857d468f"
+			"database_id": "fccd1133-3eda-4d39-89ec-ce79857d468f",
+			"migrations_dir": "database/migrations"
 		}
 	]
 	/**
